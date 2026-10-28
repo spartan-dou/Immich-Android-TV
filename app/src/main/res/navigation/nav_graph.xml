@@ -26,10 +26,6 @@
         app:destination="@id/authFragment" />
 
     <action
-        android:id="@+id/action_global_signInByPhoneFragment"
-        app:destination="@id/authByPhoneFragment" />
-
-    <action
         android:id="@+id/action_global_homeFragment"
         app:destination="@id/homeFragment" />
 
@@ -179,10 +175,6 @@
             app:destination="@id/authFragmentStep2" />
 
         <action
-            android:id="@+id/action_auth_to_auth_by_phone"
-            app:destination="@id/authByPhoneFragment" />
-
-        <action
             android:id="@+id/action_auth_to_auth_by_local_phone"
             app:destination="@id/authByLocalPhoneFragment" />
     </fragment>
@@ -197,11 +189,6 @@
     <fragment
         android:id="@+id/authFragmentStep2"
         android:name="nl.giejay.android.tv.immich.auth.AuthFragmentStep2"
-        android:label="Authentication"></fragment>
-
-    <fragment
-        android:id="@+id/authByPhoneFragment"
-        android:name="nl.giejay.android.tv.immich.auth.AuthByPhoneFragment"
         android:label="Authentication"></fragment>
 
     <fragment
@@ -309,15 +296,4 @@
         android:id="@+id/viewSettings"
         android:name="nl.giejay.android.tv.immich.settings.PrefSettingsFragment"
         android:label="ViewSettings"></fragment>
-
-    <fragment
-        android:id="@+id/noFirebaseFragment"
-        android:name="nl.giejay.android.tv.immich.auth.AuthByPhoneFragment"
-        android:label="NoFirebaseFragment">
-        <action
-            android:id="@+id/action_noFirebaseFragment_to_browseFragment"
-            app:destination="@id/homeFragment"
-            app:popUpTo="@id/noFirebaseFragment"
-            app:popUpToInclusive="true" />
-    </fragment>
 </navigation>
