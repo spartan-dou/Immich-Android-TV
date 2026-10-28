@@ -8,11 +8,15 @@ import timber.log.Timber
 
 object ApiClientFactory {
 
+    // Clients built from it share one connection pool and dispatcher (API calls, Glide, ...)
+    // instead of each opening their own connections and threads
+    private val baseClient: OkHttpClient by lazy { OkHttpClient() }
+
     fun getClient(disableSsl: Boolean, apiKey: String, debugMode: Boolean): OkHttpClient {
         val apiKeyInterceptor = interceptor(apiKey)
         val builder = if (disableSsl)
             UnsafeOkHttpClient.unsafeOkHttpClient()
-        else OkHttpClient.Builder()
+        else baseClient.newBuilder()
         builder.addInterceptor(apiKeyInterceptor)
         return if(debugMode){
             builder.addInterceptor(ResponseLoggingInterceptor()).build()

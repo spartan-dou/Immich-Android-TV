@@ -111,8 +111,9 @@ class AlbumFragment : VerticalCardGridFragment<Album>() {
         )
     }
 
+    // The dimmed background doesn't need the original file: the preview is enough and far lighter
     override fun getBackgroundPicture(it: Album): String? {
-        return ApiUtil.getFileUrl(it.albumThumbnailAssetId, "IMAGE")
+        return ApiUtil.getThumbnailUrl(it.albumThumbnailAssetId, "preview")
     }
 
     override fun openPopUpMenu() {
@@ -127,7 +128,7 @@ class AlbumFragment : VerticalCardGridFragment<Album>() {
             a.description,
             a.id,
             ApiUtil.getThumbnailUrl(a.albumThumbnailAssetId, "thumbnail"),
-            ApiUtil.getFileUrl(a.albumThumbnailAssetId, "IMAGE"),
+            getBackgroundPicture(a),
             if (selectionMode) PreferenceManager.get(selectionTypeKey).contains(a.id) else false
         )
     }
