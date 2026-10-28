@@ -272,7 +272,8 @@ data object SLIDER_METADATA_CUSTOMIZER : ActionPref(null, ImmichApplication.appC
         true
     })
 
-data object SLIDER_ONLY_USE_THUMBNAILS : BooleanPref(true,
+// Off by default: show full resolution ("fullsize") pictures on 4K TVs
+data object SLIDER_ONLY_USE_THUMBNAILS : BooleanPref(false,
     ImmichApplication.appContext!!.getString(R.string.use_hd_thumbnails),
     ImmichApplication.appContext!!.getString(R.string.use_hd_thumbnails_text))
 
@@ -512,6 +513,10 @@ data object EXCLUDE_ASSETS_IN_ALBUM : StringSetPref(emptySet(),
     }
 }
 
+data object EXCLUDE_RAW_PHOTOS : BooleanPref(true,
+    ImmichApplication.appContext!!.getString(R.string.exclude_raw_photos),
+    ImmichApplication.appContext!!.getString(R.string.exclude_raw_photos_desc))
+
 // Building the view
 data object ViewSlideshowDisplayPrefScreen : PrefScreen(ImmichApplication.appContext!!.getString(R.string.display), "view_slideshow_display",
     listOf(
@@ -564,6 +569,7 @@ data object ViewContentPrefScreen : PrefScreen(ImmichApplication.appContext!!.ge
             SIMILAR_ASSETS_PERIOD_DAYS,
             RECENT_ASSETS_MONTHS_BACK,
             EXCLUDE_ASSETS_IN_ALBUM,
+            EXCLUDE_RAW_PHOTOS,
             SHOW_PARTNER_PHOTOS_IN_TIMELINE
         ))
     )

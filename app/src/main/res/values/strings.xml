@@ -78,8 +78,10 @@
     <string name="screensaver">Screensaver</string>
     <string name="debug">Debug</string>
     <string name="donate">Donate</string>
-    <string name="use_hd_thumbnails">Use high resolution thumbnails</string>
-    <string name="use_hd_thumbnails_text">Use high resolution thumbnails instead of native/full images. Will dramatically speed up loading.</string>
+    <string name="use_hd_thumbnails">Use previews (1440p) instead of full resolution</string>
+    <string name="use_hd_thumbnails_text">Off: full resolution pictures (4K), served by Immich as JPEG even for HEIC/RAW. On: lighter 1440p previews, faster to load.</string>
+    <string name="exclude_raw_photos">Hide RAW photos</string>
+    <string name="exclude_raw_photos_desc">Hide RAW files (DNG, CR2, NEF, ARW…) everywhere. They usually duplicate a JPEG and are the heaviest files to load.</string>
     <string name="show_partner_photos_in_timeline">Show partner photos in timeline</string>
     <string name="show_partner_photos_in_timeline_desc">Include photos shared by your partner in the main timeline, in addition to the photos and search views.</string>
     <string name="albums_sorting_text">Set the order in which albums should appear</string>

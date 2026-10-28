@@ -10,6 +10,7 @@ import arrow.core.getOrElse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import nl.giejay.android.tv.immich.shared.util.isHiddenRawPhoto
 import nl.giejay.android.tv.immich.album.AlbumDetailsFragmentDirections
 import nl.giejay.android.tv.immich.api.MAX_SEARCH_PAGE_SIZE
 import nl.giejay.android.tv.immich.api.model.Asset
@@ -76,6 +77,7 @@ abstract class GenericAssetFragment : VerticalCardGridFragment<Asset>() {
         return items.filter { currentFilter ==  ContentType.ALL || it.type.equals(currentFilter.toString(), ignoreCase = true) }
             .filter(excludeByTag())
             .filterNot { excludedAssetIds.contains(it.id) }
+            .filterNot { it.isHiddenRawPhoto() }
     }
 
     private fun excludeByTag() = { asset: Asset ->

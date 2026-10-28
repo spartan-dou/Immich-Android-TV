@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import nl.giejay.android.tv.immich.shared.util.isHiddenRawPhoto
 import nl.giejay.android.tv.immich.R
 import nl.giejay.android.tv.immich.api.ApiClient
 import nl.giejay.android.tv.immich.api.ApiClientConfig
@@ -135,7 +136,7 @@ class ScreenSaverAssetLoader(
     private var currentPage = 0
     private var excludedAssetIds: Set<String> = emptySet()
     private val filteredAssetLoader = FilteredAssetLoader(
-        filterAssets = { filterExcludedAssets(it, excludedAssetIds) }
+        filterAssets = { filterExcludedAssets(it, excludedAssetIds).filterNot { asset -> asset.isHiddenRawPhoto() } }
     )
 
     fun start(): Job = scope.launch(Dispatchers.IO) {

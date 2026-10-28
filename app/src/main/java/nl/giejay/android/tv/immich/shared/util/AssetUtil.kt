@@ -6,6 +6,7 @@ import nl.giejay.mediaslider.model.SliderItemViewHolder
 import nl.giejay.android.tv.immich.api.util.ApiUtil
 import nl.giejay.android.tv.immich.api.model.Asset
 import nl.giejay.android.tv.immich.card.Card
+import nl.giejay.android.tv.immich.shared.prefs.EXCLUDE_RAW_PHOTOS
 import nl.giejay.android.tv.immich.shared.prefs.PreferenceManager
 import nl.giejay.android.tv.immich.shared.prefs.SLIDER_FORCE_ORIGINAL_VIDEO
 import nl.giejay.android.tv.immich.shared.prefs.SLIDER_LOAD_EDITED_PHOTO
@@ -78,22 +79,36 @@ fun List<Asset>.toSliderItems(keepOrder: Boolean, mergePortrait: Boolean): List<
 
 fun Asset.toSliderItem(): SliderItem {
     val itemType = SliderItemType.valueOf(this.type.uppercase())
+    val loadEdited = PreferenceManager.get(SLIDER_LOAD_EDITED_PHOTO)
     return SliderItem(
         this.id,
-        ApiUtil.getFileUrl(
-            this.id,
-            this.type,
-            PreferenceManager.get(SLIDER_FORCE_ORIGINAL_VIDEO),
-            PreferenceManager.get(SLIDER_LOAD_EDITED_PHOTO)
-        ),
+        if (itemType == SliderItemType.IMAGE) {
+            // "fullsize" serves the original for JPEG/PNG/WebP and a server-side JPEG for HEIC/RAW
+            // (falling back to the preview when not generated): full resolution without ever
+            // decoding HEIC or RAW files on the TV
+            ApiUtil.getThumbnailUrl(this.id, "fullsize", loadEdited)
+        } else {
+            ApiUtil.getFileUrl(this.id, this.type, PreferenceManager.get(SLIDER_FORCE_ORIGINAL_VIDEO), loadEdited)
+        },
         itemType,
         this.exifInfo?.orientation ?: if (itemType == SliderItemType.IMAGE) 1 else 6,
         AssetMetaDataMapping.providersFor(this),
-        ApiUtil.getThumbnailUrl(this.id, "preview", PreferenceManager.get(SLIDER_LOAD_EDITED_PHOTO)),
+        ApiUtil.getThumbnailUrl(this.id, "preview", loadEdited),
         isPanorama = this.isPanoramaImage(),
         isFavorite = this.isFavorite
     )
 }
+
+private val RAW_EXTENSIONS = setOf(
+    "3fr", "arw", "cr2", "cr3", "crw", "dcr", "dng", "erf", "iiq", "kdc", "mos", "mrw",
+    "nef", "nrw", "orf", "pef", "raf", "raw", "rw2", "rwl", "sr2", "srf", "srw", "x3f"
+)
+
+fun Asset.isRawPhoto(): Boolean =
+    (originalFileName ?: originalPath)?.substringAfterLast('.', "")?.lowercase() in RAW_EXTENSIONS
+
+// RAW files usually duplicate a JPEG and are the heaviest files to fetch and render
+fun Asset.isHiddenRawPhoto(): Boolean = PreferenceManager.get(EXCLUDE_RAW_PHOTOS) && isRawPhoto()
 
 internal fun formatAssetDate(date: Date): String {
     val calendar = Calendar.getInstance()

@@ -5,6 +5,7 @@ import arrow.core.None
 import arrow.core.Option
 import arrow.core.flatMap
 import arrow.core.getOrElse
+import nl.giejay.android.tv.immich.shared.util.isHiddenRawPhoto
 import nl.giejay.android.tv.immich.api.model.Album
 import nl.giejay.android.tv.immich.api.model.Asset
 import nl.giejay.android.tv.immich.api.model.AssetResponse
@@ -239,7 +240,7 @@ class ApiClient(private val config: ApiClientConfig) {
     }
 
     private fun excludeByTag() = { asset: Asset ->
-        asset.tags?.none { t -> t.name == "exclude_immich_tv" } ?: true
+        (asset.tags?.none { t -> t.name == "exclude_immich_tv" } ?: true) && !asset.isHiddenRawPhoto()
     }
 
     suspend fun listFolders(): Either<String, Folder> {
