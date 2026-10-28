@@ -154,3 +154,7 @@ dependencies {
     testImplementation libs.google.api.client
 
 }
+
+// Fork (spartan): own application id, so this build can never be mistaken for, or "updated" by,
+// the official app. Kept at the end of the file to stay clear of upstream's version bumps.
+android.defaultConfig.applicationId = "io.github.spartandou.immichtv"
