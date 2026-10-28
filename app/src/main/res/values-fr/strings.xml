@@ -78,8 +78,10 @@
     <string name="screensaver">Écran de veille</string>
     <string name="debug">Débogage</string>
     <string name="donate">Faire un don</string>
-    <string name="use_hd_thumbnails">Utiliser les miniatures haute résolution</string>
-    <string name="use_hd_thumbnails_text">Utiliser les miniatures haute résolution au lieu des images natives/complètes. Cela accélérera considérablement le chargement.</string>
+    <string name="use_hd_thumbnails">Utiliser les aperçus (1440p) au lieu de la pleine résolution</string>
+    <string name="use_hd_thumbnails_text">Désactivé : photos en pleine résolution (4K), servies en JPEG par Immich même pour les HEIC/RAW. Activé : aperçus 1440p plus légers, plus rapides à charger.</string>
+    <string name="exclude_raw_photos">Masquer les photos RAW</string>
+    <string name="exclude_raw_photos_desc">Masque partout les fichiers RAW (DNG, CR2, NEF, ARW…). Ils doublent généralement un JPEG et sont les plus lourds à charger.</string>
     <string name="show_partner_photos_in_timeline">Afficher les photos du partenaire dans la chronologie</string>
     <string name="show_partner_photos_in_timeline_desc">Inclure les photos partagées par votre partenaire dans la chronologie principale, en plus des vues photos et recherche.</string>
     <string name="albums_sorting_text">Définir l’ordre d’affichage des albums</string>
