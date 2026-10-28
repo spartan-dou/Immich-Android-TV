@@ -310,8 +310,10 @@ abstract class VerticalCardGridFragment<ITEM> : GridFragment() {
             Timber.i("Could not load background because background url is null")
             return
         }
-        val width: Int = mMetrics.widthPixels
-        val height: Int = mMetrics.heightPixels
+        // Half the screen resolution: the background is dimmed behind the grid, and a full-size
+        // bitmap costs ~33 MB on a 4K screen (BackgroundManager scales it up anyway)
+        val width: Int = mMetrics.widthPixels / 2
+        val height: Int = mMetrics.heightPixels / 2
         try {
             Glide.with(requireActivity())
                 .load(backgroundUrl)

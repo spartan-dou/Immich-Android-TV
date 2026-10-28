@@ -6,6 +6,7 @@ import android.view.ContextThemeWrapper
 import android.widget.ImageView
 import androidx.leanback.widget.ImageCardView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DecodeFormat
 import nl.giejay.android.tv.immich.R
 import nl.giejay.android.tv.immich.shared.presenter.AbstractPresenter
 import timber.log.Timber
@@ -42,6 +43,8 @@ open class CardPresenter(context: Context, style: Int = R.style.DefaultCardTheme
             if(it.startsWith("http")){
                 Glide.with(context)
                     .asBitmap()
+                    // Half the memory of ARGB_8888, not visible on small card thumbnails
+                    .format(DecodeFormat.PREFER_RGB_565)
                     .centerInside()
                     .load(it)
                     .into(cardView.mainImageView!!)

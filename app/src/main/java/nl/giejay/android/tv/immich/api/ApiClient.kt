@@ -29,6 +29,8 @@ import nl.giejay.android.tv.immich.shared.prefs.RECENT_ASSETS_MONTHS_BACK
 import nl.giejay.android.tv.immich.shared.prefs.SHOW_PARTNER_PHOTOS_IN_TIMELINE
 import nl.giejay.android.tv.immich.shared.prefs.SIMILAR_ASSETS_PERIOD_DAYS
 import nl.giejay.android.tv.immich.shared.prefs.SIMILAR_ASSETS_YEARS_BACK
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import nl.giejay.android.tv.immich.shared.util.Utils.pmap
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -57,6 +59,8 @@ data class ApiClientConfig(
 
 // Immich rejects /search/metadata and /search/random requests with a size above 1000 (400 Bad Request)
 const val MAX_SEARCH_PAGE_SIZE = 1000
+
+private const val MAX_PARALLEL_PAGE_REQUESTS = 3
 
 // internal so app/src/test can call it directly without instantiating ApiClient/Retrofit
 internal fun buildListAssetsSearchRequest(
@@ -135,6 +139,9 @@ class ApiClient(private val config: ApiClientConfig) {
     suspend fun listAssetsFromAlbum(albumIds: List<String>,
                                     contentType: ContentType = ContentType.ALL,
                                     pageCount: Int = 100): Either<String, AssetResponse> {
+        // Pages of up to 1000 assets are big JSON responses: parsing them all at once can
+        // exhaust memory on low-RAM TV devices, so keep a few requests in flight at most
+        val pageRequestLimiter = Semaphore(MAX_PARALLEL_PAGE_REQUESTS)
         val results = albumIds.pmap { albumId ->
             val album = executeAPICall(200) { service.getAlbum(albumId) }
                 .getOrElse { return@pmap Either.Left(it) }
@@ -145,12 +152,14 @@ class ApiClient(private val config: ApiClientConfig) {
             val pages = (1..numPages).toList()
 
             val assetsResults = pages.pmap { page ->
-                search(SearchRequest(
-                    page = page,
-                    size = size,
-                    albumIds = listOf(albumId),
-                    type = if (contentType == ContentType.ALL) null else contentType.toString()
-                ))
+                pageRequestLimiter.withPermit {
+                    search(SearchRequest(
+                        page = page,
+                        size = size,
+                        albumIds = listOf(albumId),
+                        type = if (contentType == ContentType.ALL) null else contentType.toString()
+                    ))
+                }
             }
 
             val albumAssets = mutableListOf<Asset>()

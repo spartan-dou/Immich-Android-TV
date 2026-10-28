@@ -179,8 +179,9 @@ abstract class GenericAssetFragment : VerticalCardGridFragment<Asset>() {
         }
     }
 
+    // Same size as the background used when a card gets focused (Asset.toCard)
     override fun getBackgroundPicture(it: Asset): String? {
-        return ApiUtil.getFileUrl(it.id, "IMAGE")
+        return ApiUtil.getThumbnailUrl(it.id, "preview")
     }
 
     override fun createCard(a: Asset): Card {
