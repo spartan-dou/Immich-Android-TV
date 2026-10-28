@@ -217,6 +217,16 @@
     <string name="auth_sign_in_by_phone_desc">Connectez-vous à votre instance Immich en scannant un code QR avec votre téléphone. Remarque : cela fonctionne uniquement si votre serveur Immich est accessible depuis Internet (pas avec des adresses IP locales/privées).</string>
     <string name="auth_demo_mode">Mode démo</string>
     <string name="auth_demo_mode_desc">Se connecter à une instance Immich de démonstration.</string>
+    <string name="auth_sign_in_by_local_phone">Se connecter avec un téléphone (réseau local)</string>
+    <string name="auth_sign_in_by_local_phone_desc">Scannez un code QR et connectez-vous avec l’e-mail et le mot de passe Immich depuis votre téléphone. Tout reste sur votre réseau local : aucun serveur tiers n’intervient.</string>
+    <string name="local_sign_in_open_url">Scannez le code QR avec un téléphone connecté au même réseau, ou ouvrez %1$s</string>
+    <string name="local_sign_in_no_network">Aucune connexion au réseau local. Connectez la TV à votre réseau et réessayez.</string>
+    <string name="local_sign_in_email">E-mail</string>
+    <string name="local_sign_in_password">Mot de passe</string>
+    <string name="local_sign_in_notice">Cette page est servie par votre TV sur votre réseau local. Votre mot de passe n’est envoyé qu’à votre propre serveur Immich, qui crée pour la TV une clé API limitée à ce dont l’appli a besoin. Vous pouvez la révoquer à tout moment dans Immich : Paramètres du compte, Clés API.</string>
+    <string name="local_sign_in_success">Connecté ! Vous pouvez fermer cette page.</string>
+    <string name="local_sign_in_failed">Échec de la connexion</string>
+    <string name="local_sign_in_too_many_attempts">Trop de tentatives. Rouvrez l’écran de connexion sur la TV pour réessayer.</string>
 
     <!-- Auth step 2 (GuidedStep) -->
     <string name="login_immich_description">Connectez-vous à votre serveur Immich ou essayez une démo.</string>

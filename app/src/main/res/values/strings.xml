@@ -229,6 +229,16 @@
     <string name="auth_sign_in_by_phone_desc">Login to your Immich instance by scanning a QR code with your phone. Note: this only works if your Immich server is accessible from the internet (not for local/private IP addresses).</string>
     <string name="auth_demo_mode">Demo mode</string>
     <string name="auth_demo_mode_desc">Login to a demo Immich instance.</string>
+    <string name="auth_sign_in_by_local_phone">Sign in by phone (local network)</string>
+    <string name="auth_sign_in_by_local_phone_desc">Scan a QR code and sign in with your Immich email and password from your phone. Everything stays on your local network: no third-party server is involved.</string>
+    <string name="local_sign_in_open_url">Scan the QR code with a phone on the same network, or open %1$s</string>
+    <string name="local_sign_in_no_network">No local network connection found. Connect the TV to your network and try again.</string>
+    <string name="local_sign_in_email">Email</string>
+    <string name="local_sign_in_password">Password</string>
+    <string name="local_sign_in_notice">This page is served by your TV on your local network. Your password is only sent to your own Immich server, which creates an API key for the TV limited to what the app needs. You can revoke it anytime in Immich under Account Settings, API Keys.</string>
+    <string name="local_sign_in_success">Signed in! You can close this page.</string>
+    <string name="local_sign_in_failed">Sign in failed</string>
+    <string name="local_sign_in_too_many_attempts">Too many attempts. Reopen the sign-in screen on the TV to try again.</string>
 
     <!-- Auth step 2 (GuidedStep) -->
     <string name="login_immich_description">Login to your Immich server or try a demo.</string>

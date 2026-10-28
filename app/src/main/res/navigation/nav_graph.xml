@@ -146,6 +146,10 @@
         <action
             android:id="@+id/action_auth_to_auth_by_phone"
             app:destination="@id/authByPhoneFragment" />
+
+        <action
+            android:id="@+id/action_auth_to_auth_by_local_phone"
+            app:destination="@id/authByLocalPhoneFragment" />
     </fragment>
 
 
@@ -163,6 +167,11 @@
     <fragment
         android:id="@+id/authByPhoneFragment"
         android:name="nl.giejay.android.tv.immich.auth.AuthByPhoneFragment"
+        android:label="Authentication"></fragment>
+
+    <fragment
+        android:id="@+id/authByLocalPhoneFragment"
+        android:name="nl.giejay.android.tv.immich.auth.AuthByLocalPhoneFragment"
         android:label="Authentication"></fragment>
 
     <!--    <fragment-->
