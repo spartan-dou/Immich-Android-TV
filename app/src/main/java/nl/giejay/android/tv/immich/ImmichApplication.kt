@@ -21,7 +21,6 @@ import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import nl.giejay.android.tv.immich.homescreenchannels.HomeScreenChannelManager
 import nl.giejay.android.tv.immich.shared.prefs.DEBUG_MODE
 import nl.giejay.android.tv.immich.shared.prefs.PreferenceManager
@@ -46,7 +45,7 @@ class ImmichApplication : Application() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         } else {
-            Timber.plant(CrashReportingTree())
+            Timber.plant(LogcatTree())
         }
 
         var userId = PreferenceManager.get(USER_ID)
@@ -54,7 +53,6 @@ class ImmichApplication : Application() {
             userId = UUID.randomUUID().toString()
             PreferenceManager.save(USER_ID, userId)
         }
-        FirebaseCrashlytics.getInstance().setUserId(userId)
 
         HomeScreenChannelManager.initSubscriptions()
         ProcessLifecycleOwner.get().lifecycle.addObserver(object : DefaultLifecycleObserver {
@@ -68,19 +66,13 @@ class ImmichApplication : Application() {
         var appContext: Context? = null
     }
 
-    private class CrashReportingTree : Timber.Tree() {
-        val instance = FirebaseCrashlytics.getInstance()
-
+    // Release logs stay on the device (logcat): nothing is sent to a crash reporting service
+    private class LogcatTree : Timber.Tree() {
         override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
             if (priority == Log.VERBOSE || (priority == Log.DEBUG && !PreferenceManager.get(DEBUG_MODE))) {
                 return
             }
-            instance.log("$tag : $message")
-            if (t != null) {
-                instance.recordException(t)
-            } else if (priority == Log.ERROR) {
-                instance.recordException(UnknownError(message))
-            }
+            Log.println(priority, tag ?: "ImmichTV", if (t != null) "$message\n${Log.getStackTraceString(t)}" else message)
         }
     }
 }
