@@ -1,0 +1,91 @@
+# Rebuilds the spartan branch on top of the latest upstream version every night.
+# The rebase only happens inside the runner (nothing is pushed back), the result is
+# tested, signed and published as a GitHub release. A rebase conflict opens an issue.
+name: Spartan build
+
+on:
+  schedule:
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: spartan-build
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: spartan
+          fetch-depth: 0
+
+      - name: Fetch upstream
+        id: versions
+        run: |
+          git remote add upstream https://github.com/giejay/Immich-Android-TV.git
+          git fetch --no-tags upstream main
+          upstream_sha=$(git rev-parse --short upstream/main)
+          spartan_sha=$(git rev-parse --short HEAD)
+          tag="spartan-${upstream_sha}-${spartan_sha}"
+          echo "upstream_sha=$upstream_sha" >> "$GITHUB_OUTPUT"
+          echo "spartan_sha=$spartan_sha" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Release $tag already exists: nothing new to build"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Rebase spartan on upstream
+        if: steps.versions.outputs.skip != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ! git rebase upstream/main; then
+            conflicts=$(git diff --name-only --diff-filter=U)
+            git rebase --abort
+            title="Conflit de rebase avec upstream ${{ steps.versions.outputs.upstream_sha }}"
+            if [ -z "$(gh issue list --state open --search "$title in:title" --json number --jq '.[].number')" ]; then
+              printf 'Le rebase de `spartan` sur `upstream/main` (%s) échoue.\n\nFichiers en conflit :\n```\n%s\n```\n\nÀ résoudre à la main : `git fetch upstream && git rebase upstream/main` sur la branche spartan.\n' \
+                "${{ steps.versions.outputs.upstream_sha }}" "$conflicts" | gh issue create --title "$title" --body-file -
+            fi
+            exit 1
+          fi
+
+      - uses: actions/setup-java@v4
+        if: steps.versions.outputs.skip != 'true'
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Test and build signed release
+        if: steps.versions.outputs.skip != 'true'
+        env:
+          KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+          RELEASE_KEYSTORE_PATH: ${{ runner.temp }}/release.jks
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > "$RELEASE_KEYSTORE_PATH"
+          chmod +x gradlew
+          ./gradlew --no-daemon :app:testDebugUnitTest :app:assembleRelease
+          rm -f "$RELEASE_KEYSTORE_PATH"
+
+      - name: Publish release
+        if: steps.versions.outputs.skip != 'true'
+        run: |
+          version=$(sed -n 's/.*versionName "\(.*\)".*/\1/p' app/build.gradle)
+          apk=$(ls app/build/outputs/apk/release/*.apk)
+          cp "$apk" "ImmichTV-${version}-spartan.apk"
+          printf 'Immich TV %s (upstream `%s`) avec les modifications de la branche spartan (`%s`).\n\nRebasé et compilé automatiquement.\n' \
+            "$version" "${{ steps.versions.outputs.upstream_sha }}" "${{ steps.versions.outputs.spartan_sha }}" > notes.md
+          gh release create "${{ steps.versions.outputs.tag }}" "ImmichTV-${version}-spartan.apk" \
+            --target spartan --title "Immich TV ${version} (spartan)" --notes-file notes.md
