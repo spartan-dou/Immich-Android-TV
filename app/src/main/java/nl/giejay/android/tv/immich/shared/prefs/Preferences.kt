@@ -581,10 +581,15 @@ data object SHOW_DATES : BooleanPref(true,
     ImmichApplication.appContext!!.getString(R.string.show_dates),
     ImmichApplication.appContext!!.getString(R.string.show_dates_desc))
 
+data object BLUR_BACKGROUND : BooleanPref(true,
+    ImmichApplication.appContext!!.getString(R.string.blur_background),
+    ImmichApplication.appContext!!.getString(R.string.blur_background_desc))
+
 data object ViewGeneralPrefScreen : PrefScreen(ImmichApplication.appContext!!.getString(R.string.general), "view_general",
     listOf(
         PrefCategory("", listOf(
             LOAD_BACKGROUND_IMAGE,
+            BLUR_BACKGROUND,
             SHOW_DATES
         ))
     )

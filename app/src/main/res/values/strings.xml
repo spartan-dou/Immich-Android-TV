@@ -254,6 +254,8 @@
     <string name="more_settings">More settings</string>
     <string name="show_dates">Show dates</string>
     <string name="show_dates_desc">Master switch: when off, no date is shown anywhere (viewer, screensaver, albums), whatever the other date settings.</string>
+    <string name="blur_background">Blurred background</string>
+    <string name="blur_background_desc">Frosted-glass background behind grids, computed on a tiny image so it stays light.</string>
     <plurals name="album_item_count">
         <item quantity="one">%d item</item>
         <item quantity="other">%d items</item>

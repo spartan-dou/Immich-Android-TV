@@ -2,6 +2,9 @@ package nl.giejay.android.tv.immich.card
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Outline
+import android.view.View
+import android.view.ViewOutlineProvider
 import android.view.ContextThemeWrapper
 import android.widget.ImageView
 import androidx.leanback.widget.ImageCardView
@@ -80,7 +83,21 @@ open class CardPresenter(context: Context, style: Int = R.style.DefaultCardTheme
     }
 
     override fun onCreateView(): ImageCardView {
-        return ImageCardView(context)
+        val cardView = ImageCardView(context)
+        // Rounded corners (image and footer are clipped together)
+        val radius = context.resources.getDimension(R.dimen.card_corner_radius)
+        cardView.outlineProvider = object : ViewOutlineProvider() {
+            override fun getOutline(view: View, outline: Outline) {
+                outline.setRoundRect(0, 0, view.width, view.height, radius)
+            }
+        }
+        cardView.clipToOutline = true
+        // Colored halo on the focused card. Leanback chains its own focus listener after this one.
+        val halo = context.getDrawable(R.drawable.card_focus_halo)
+        cardView.setOnFocusChangeListener { view, hasFocus ->
+            view.foreground = if (hasFocus) halo else null
+        }
+        return cardView
     }
 
     private fun setSelected(imageCardView: ImageCardView, selected: Boolean) {

@@ -33,6 +33,7 @@ enum class SelectionType {
 }
 
 class AlbumFragment : VerticalCardGridFragment<Album>() {
+    override val isSortable: Boolean get() = !selectionMode
     private lateinit var selectionTypeKey: StringSetPref
     private val selectionType: SelectionType
         get() = arguments?.getString("selectionType")?.let { SelectionType.valueOf(it) } ?: SelectionType.SET_SCREENSAVER

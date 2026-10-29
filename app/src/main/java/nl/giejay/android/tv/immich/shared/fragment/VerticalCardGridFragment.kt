@@ -11,6 +11,9 @@ import androidx.leanback.widget.ArrayObjectAdapter
 import androidx.leanback.widget.FocusHighlight
 import androidx.leanback.widget.OnItemViewClickedListener
 import androidx.leanback.widget.VerticalGridPresenter
+import nl.giejay.android.tv.immich.R
+import androidx.leanback.widget.TitleView
+import androidx.leanback.widget.SearchOrbView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -18,6 +21,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import arrow.core.Either
 import com.bumptech.glide.Glide
+import nl.giejay.android.tv.immich.shared.prefs.BLUR_BACKGROUND
+import nl.giejay.android.tv.immich.shared.util.SoftBlurTransformation
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import kotlinx.coroutines.CoroutineScope
@@ -109,6 +115,8 @@ abstract class VerticalCardGridFragment<ITEM> : GridFragment() {
                     // open popup menu on the right side if its the last photo in the row and user presses right button
                     if (it?.keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && ((adapter.size() == 0 && allPagesLoaded) || currentSelectedIndex > 0 && (currentSelectedIndex % COLUMNS == 3 || currentSelectedIndex + 1 == adapter.size()))) {
                         openPopUpMenu()
+                    } else if (it?.keyCode == KeyEvent.KEYCODE_MENU && it.action == KeyEvent.ACTION_DOWN) {
+                        openPopUpMenu()
                     } else if (it?.keyCode == KeyEvent.KEYCODE_FORWARD || it?.keyCode == KeyEvent.KEYCODE_MEDIA_SKIP_FORWARD || it?.keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
                         updateManualPositionHandler(adapter.size() - 1)
                     } else if (it?.keyCode == KeyEvent.KEYCODE_MEDIA_REWIND || it?.keyCode == KeyEvent.KEYCODE_MEDIA_SKIP_BACKWARD) {
@@ -195,6 +203,22 @@ abstract class VerticalCardGridFragment<ITEM> : GridFragment() {
 
     protected open fun openPopUpMenu() {
         // to implement by children
+    }
+
+    // Grids with a sort order get a visible "sort" button in their title bar (up from the first row)
+    protected open val isSortable: Boolean = false
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        if (!isSortable) return
+        setOnSearchClickedListener { openPopUpMenu() }
+        (titleView as? TitleView)?.let { title ->
+            val accent = requireContext().getColor(R.color.immich_accent)
+            val searchOrb = title.searchAffordanceView as? SearchOrbView
+            searchOrb?.setOrbColors(SearchOrbView.Colors(requireContext().getColor(R.color.nav_pill_focused), accent, accent))
+            requireContext().getDrawable(R.drawable.ic_sort)?.let { searchOrb?.setOrbIcon(it) }
+            searchOrb?.contentDescription = getString(R.string.order)
+        }
     }
 
     private fun fetchNextItems(): Job {
@@ -312,14 +336,16 @@ abstract class VerticalCardGridFragment<ITEM> : GridFragment() {
             Timber.i("Could not load background because background url is null")
             return
         }
-        // Half the screen resolution: the background is dimmed behind the grid, and a full-size
-        // bitmap costs ~33 MB on a 4K screen (BackgroundManager scales it up anyway)
-        val width: Int = mMetrics.widthPixels / 2
-        val height: Int = mMetrics.heightPixels / 2
+        // The background is dimmed behind the grid and BackgroundManager scales it up anyway: half
+        // the screen resolution (a full 4K bitmap is ~33 MB), or a tiny bitmap when blurred
+        val blur = PreferenceManager.get(BLUR_BACKGROUND)
+        val divider = if (blur) BLURRED_BACKGROUND_DIVIDER else 2
+        val width: Int = mMetrics.widthPixels / divider
+        val height: Int = mMetrics.heightPixels / divider
         try {
             Glide.with(requireActivity())
                 .load(backgroundUrl)
-                .centerCrop()
+                .let { if (blur) it.transform(CenterCrop(), SoftBlurTransformation()) else it.centerCrop() }
                 .into(object : SimpleTarget<Drawable?>(width, height) {
                     override fun onResourceReady(
                         resource: Drawable,
@@ -364,6 +390,8 @@ abstract class VerticalCardGridFragment<ITEM> : GridFragment() {
         private const val FETCH_NEXT_THRESHOLD = COLUMNS * 6
         const val FETCH_COUNT = 50
         const val FETCH_PAGE_COUNT = FETCH_COUNT
+        // ~240x135 on a 1080p UI: blurred then stretched by BackgroundManager
+        private const val BLURRED_BACKGROUND_DIVIDER = 8
         /** Shared with Timeline so it can cancel a pending Photos background paint. */
         const val BACKGROUND_DEBOUNCE_KEY = "background"
     }

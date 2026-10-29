@@ -50,6 +50,7 @@ import nl.giejay.mediaslider.util.LoadMoreResult
 import nl.giejay.mediaslider.viewmodel.MediaSliderViewModel
 
 abstract class GenericAssetFragment : VerticalCardGridFragment<Asset>() {
+    override val isSortable: Boolean = true
     protected lateinit var currentFilter: ContentType
     protected lateinit var currentSort: PhotosOrder
     private var excludedAssetsLoaded = false
