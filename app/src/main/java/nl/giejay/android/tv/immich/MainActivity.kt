@@ -15,6 +15,7 @@ import arrow.core.getOrElse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import nl.giejay.android.tv.immich.auth.AccountManager
 import nl.giejay.android.tv.immich.api.ApiClient
 import nl.giejay.android.tv.immich.api.ApiClientConfig
 import nl.giejay.android.tv.immich.home.HomeFragmentDirections
@@ -171,12 +172,20 @@ class MainActivity : FragmentActivity() {
     }
 
     /**
-     * Chooses whether to show the browse screen or the "no Firebase" notice
+     * Sign-in when there's no account, the "who's watching?" screen when there are several,
+     * the browse screen otherwise
      */
     private fun loadStartingPage() {
+        val accounts = AccountManager.accounts()
+        if (accounts.size == 1) {
+            AccountManager.activate(accounts.first().id)
+        }
         if (!PreferenceManager.isLoggedId()) {
             Timber.i("Start page is authentication")
             navGraph.setStartDestination(R.id.authFragment)
+        } else if (accounts.size > 1) {
+            Timber.i("Start page is profiles")
+            navGraph.setStartDestination(R.id.profilesFragment)
         } else {
             Timber.i("Start page is home")
             navGraph.setStartDestination(R.id.homeFragment)
