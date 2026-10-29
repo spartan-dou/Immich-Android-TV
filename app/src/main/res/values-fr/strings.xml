@@ -225,13 +225,17 @@
     <string name="local_sign_in_no_network">Aucune connexion au réseau local. Connectez la TV à votre réseau et réessayez.</string>
     <string name="local_sign_in_email">E-mail</string>
     <string name="local_sign_in_password">Mot de passe</string>
+    <string name="local_sign_in_sso">Se connecter avec le SSO</string>
+    <string name="local_sign_in_or_password">Ou avec e-mail et mot de passe</string>
+    <string name="local_sign_in_sso_redirect">Pour le SSO, le fournisseur d’identité doit autoriser cette URI de redirection pour Immich (adresse fixe : donnez une IP fixe à la TV) :</string>
+    <string name="local_sign_in_sso_not_started">Aucune connexion SSO en cours pour cette page. Rouvrez l’adresse affichée sur la TV et recommencez.</string>
     <string name="local_sign_in_notice">Cette page est servie par votre TV sur votre réseau local. Votre mot de passe n’est envoyé qu’à votre propre serveur Immich, qui crée pour la TV une clé API limitée à ce dont l’appli a besoin. Vous pouvez la révoquer à tout moment dans Immich : Paramètres du compte, Clés API.</string>
     <string name="local_sign_in_success">Connecté ! Vous pouvez fermer cette page.</string>
     <string name="local_sign_in_failed">Échec de la connexion</string>
     <string name="local_sign_in_too_many_attempts">Trop de tentatives. Rouvrez l’écran de connexion sur la TV pour réessayer.</string>
 
     <!-- Auth step 2 (GuidedStep) -->
-    <string name="login_immich_description">Connectez-vous à votre serveur Immich ou essayez une démo.</string>
+    <string name="login_immich_description">Connectez-vous à votre serveur Immich.</string>
     <string name="server_url_hint">URL du serveur (http[s]://…)</string>
     <string name="disable_ssl_verification">Désactiver la vérification SSL</string>
     <string name="disable_ssl_verification_desc">À utiliser uniquement si vous rencontrez des problèmes avec des certificats autosignés !</string>
