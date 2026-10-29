@@ -20,8 +20,13 @@
     <!-- Immich brand colors -->
     <color name="immich_primary">#4250AF</color>
     <color name="immich_primary_light">#6E7CD6</color>
-    <color name="brand_header">#101218</color>
+    <!-- Translucent left menu: the (blurred) background shows through -->
+    <color name="brand_header">#D9101218</color>
     <color name="card_info_background">#1E2129</color>
+    <!-- Immich mobile dark theme accent -->
+    <color name="immich_accent">#ACCBFA</color>
+    <color name="nav_pill_focused">#2C3558</color>
+    <color name="nav_item_text">#C9CCD4</color>
 
     <color name="black">#000000</color>
 

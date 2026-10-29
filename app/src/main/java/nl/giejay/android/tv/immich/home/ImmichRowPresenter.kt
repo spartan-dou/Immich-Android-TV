@@ -24,6 +24,10 @@ class ImmichRowPresenter : Presenter() {
         val headerItem = if (item == null) null else (item as Row).headerItem
         val vh = viewHolder as ImmichRowViewHolder
         vh.tvTitle.text = headerItem?.name
+        // Header ids are their index in HomeFragment's HEADERS
+        val iconRes = headerItem?.id?.toInt()?.let { HEADER_ICONS.getOrNull(it) }
+        vh.headerIcon.visibility = if (iconRes != null) View.VISIBLE else View.GONE
+        iconRes?.let { vh.headerIcon.setImageResource(it) }
 
         if (editMode) {
             if (headerItem?.name == viewHolder.view.context.getString(R.string.edit)) {
@@ -46,4 +50,19 @@ class ImmichRowPresenter : Presenter() {
         vh.tvTitle.text = null
     }
 
+    companion object {
+        // Same order as HomeFragment's HEADERS
+        private val HEADER_ICONS = listOf(
+            R.drawable.ic_nav_timeline,
+            R.drawable.ic_nav_albums,
+            R.drawable.ic_nav_photos,
+            R.drawable.ic_nav_random,
+            R.drawable.ic_nav_people,
+            R.drawable.ic_nav_recent,
+            R.drawable.ic_nav_seasonal,
+            R.drawable.ic_nav_folders,
+            R.drawable.ic_nav_edit,
+            R.drawable.ic_nav_settings
+        )
+    }
 }
