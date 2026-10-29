@@ -45,14 +45,14 @@ class SettingsFragment : RowsSupportFragment() {
                 createCardRow(
                     listOf(
                         SettingsCard(
-                            ImmichApplication.appContext!!.getString(R.string.server),
+                            ImmichApplication.appContext!!.getString(R.string.profiles_settings),
                             null,
                             "server",
                             "ic_settings_settings",
                             "ic_settings_settings"
                         ) {
                             findNavController().navigate(
-                                HomeFragmentDirections.actionGlobalSignInFragment()
+                                HomeFragmentDirections.actionGlobalProfilesFragment()
                             )
                         },
                         SettingsCard(

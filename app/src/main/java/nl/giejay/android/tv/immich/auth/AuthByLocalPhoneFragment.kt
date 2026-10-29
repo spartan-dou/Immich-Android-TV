@@ -13,10 +13,7 @@ import com.github.alexzhirkevich.customqrgenerator.vector.QrCodeDrawable
 import nl.giejay.android.tv.immich.ImmichApplication
 import nl.giejay.android.tv.immich.R
 import nl.giejay.android.tv.immich.databinding.FragmentAuthByPhoneBinding
-import nl.giejay.android.tv.immich.shared.prefs.API_KEY
-import nl.giejay.android.tv.immich.shared.prefs.HOST_NAME
 import nl.giejay.android.tv.immich.shared.prefs.PreferenceManager
-import nl.giejay.android.tv.immich.shared.prefs.SCREENSAVER_ALBUMS
 import timber.log.Timber
 
 /**
@@ -105,22 +102,21 @@ class AuthByLocalPhoneFragment : Fragment() {
         }
     }
 
-    private fun signIn(hostName: String, createApiKey: () -> String): LocalLoginServer.LoginResult = try {
-        val apiKey = createApiKey()
-        view?.post { onSignedIn(hostName, apiKey) }
+    private fun signIn(hostName: String, createApiKey: () -> SignedInAccount): LocalLoginServer.LoginResult = try {
+        val account = createApiKey()
+        view?.post { onSignedIn(hostName, account) }
         LocalLoginServer.LoginResult(true, string(R.string.local_sign_in_success))
     } catch (e: LoginException) {
         LocalLoginServer.LoginResult(false, e.message ?: string(R.string.local_sign_in_failed))
     }
 
-    private fun onSignedIn(hostName: String, apiKey: String) {
+    private fun onSignedIn(hostName: String, account: SignedInAccount) {
         if (!isAdded) return
-        PreferenceManager.save(SCREENSAVER_ALBUMS, emptySet())
-        PreferenceManager.save(API_KEY, apiKey)
-        PreferenceManager.save(HOST_NAME, hostName)
+        AccountManager.add(account.name, account.email, hostName, account.apiKey)
+        // Fresh back stack: the profiles/sign-in screens shouldn't come back with "back"
         findNavController().navigate(
             AuthByLocalPhoneFragmentDirections.actionGlobalHomeFragment(),
-            NavOptions.Builder().setPopUpTo(R.id.authFragment, true).build()
+            NavOptions.Builder().setPopUpTo(R.id.nav_graph, true).build()
         )
     }
 

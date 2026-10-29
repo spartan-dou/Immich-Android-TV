@@ -17,9 +17,7 @@ import nl.giejay.android.tv.immich.shared.guidedstep.GuidedStepUtil.addEditableA
 import nl.giejay.android.tv.immich.shared.prefs.API_KEY
 import nl.giejay.android.tv.immich.shared.prefs.DEBUG_MODE
 import nl.giejay.android.tv.immich.shared.prefs.DISABLE_SSL_VERIFICATION
-import nl.giejay.android.tv.immich.shared.prefs.HOST_NAME
 import nl.giejay.android.tv.immich.shared.prefs.PreferenceManager
-import nl.giejay.android.tv.immich.shared.prefs.SCREENSAVER_ALBUMS
 import timber.log.Timber
 
 
@@ -91,13 +89,13 @@ class AuthFragmentStep2 : GuidedStepSupportFragment() {
         Timber.i("Clicked on ${action.title} in step 2, entry valid: ${entry.isValid()}")
         if (action.id == ACTION_CONTINUE) {
             if (entry.isValid()) {
-                PreferenceManager.save(SCREENSAVER_ALBUMS, emptySet())
-                PreferenceManager.save(API_KEY, entry.apiKey)
-                PreferenceManager.save(HOST_NAME, entry.hostName)
                 PreferenceManager.save(DISABLE_SSL_VERIFICATION, findActionById(ACTION_CHECK_CERTS)?.isChecked == true)
                 PreferenceManager.save(DEBUG_MODE, findActionById(ACTION_DEBUG_MODE)?.isChecked == true)
+                val hostName = entry.hostName.trim().removeSuffix("/")
+                // An API key alone doesn't tell whose account it is: named after the server
+                AccountManager.add(AccountManager.hostLabel(hostName), null, hostName, entry.apiKey.trim())
                 val navControl = findNavController()
-                navControl.navigate(AuthFragmentStep2Directions.actionGlobalHomeFragment(), NavOptions.Builder().setPopUpTo(R.id.authFragment, true).build())
+                navControl.navigate(AuthFragmentStep2Directions.actionGlobalHomeFragment(), NavOptions.Builder().setPopUpTo(R.id.nav_graph, true).build())
             } else if (entry.hostName.isEmpty()) {
                 Toast.makeText(activity, getString(R.string.enter_server_url), Toast.LENGTH_SHORT)
                     .show()

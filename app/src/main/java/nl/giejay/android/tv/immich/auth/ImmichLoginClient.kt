@@ -15,6 +15,9 @@ import java.util.concurrent.TimeUnit
 
 class LoginException(message: String) : Exception(message)
 
+/** API key created for the TV, with the account it belongs to (from Immich's login response). */
+data class SignedInAccount(val apiKey: String, val name: String, val email: String)
+
 /**
  * Exchanges Immich credentials (password or SSO) for an API key, directly against the user's own
  * server: login -> create an API key -> logout. The rest of the app keeps using API keys only.
@@ -26,8 +29,17 @@ class ImmichLoginClient(
         .build()
 ) {
 
-    fun createApiKey(hostName: String, email: String, password: String, keyName: String): String =
-        createApiKeyWithSession(hostName, login(hostName, email, password), keyName)
+    fun createApiKey(hostName: String, email: String, password: String, keyName: String): SignedInAccount {
+        val body = JSONObject().put("email", email).put("password", password)
+        val login = execute(post("$hostName/api/auth/login", body)).use { response ->
+            if (response.code == 401 || response.code == 400) {
+                throw LoginException(errorMessage(response) ?: "Invalid email or password")
+            }
+            ensureSuccess(response)
+            JSONObject(response.body?.string().orEmpty())
+        }
+        return createApiKeyWithSession(hostName, login, keyName)
+    }
 
     /** Starts an SSO sign-in: returns the identity provider URL the phone must open. */
     fun startOAuth(hostName: String, redirectUri: String, state: String, codeChallenge: String): String {
@@ -44,45 +56,36 @@ class ImmichLoginClient(
     }
 
     /** Finishes an SSO sign-in from the URL the identity provider redirected the phone to. */
-    fun createApiKeyWithOAuth(hostName: String, callbackUrl: String, state: String, codeVerifier: String, keyName: String): String {
+    fun createApiKeyWithOAuth(hostName: String, callbackUrl: String, state: String, codeVerifier: String, keyName: String): SignedInAccount {
         val body = JSONObject()
             .put("url", callbackUrl)
             .put("state", state)
             .put("codeVerifier", codeVerifier)
-        val accessToken = execute(post("$hostName/api/oauth/callback", body)).use { response ->
+        val login = execute(post("$hostName/api/oauth/callback", body)).use { response ->
             ensureSuccess(response)
-            JSONObject(response.body?.string().orEmpty()).optString("accessToken").ifEmpty {
-                throw LoginException("No access token returned by the server")
-            }
+            JSONObject(response.body?.string().orEmpty())
         }
-        return createApiKeyWithSession(hostName, accessToken, keyName)
+        return createApiKeyWithSession(hostName, login, keyName)
     }
 
-    private fun createApiKeyWithSession(hostName: String, accessToken: String, keyName: String): String {
+    // login: Immich's LoginResponseDto (password and SSO sign-ins return the same thing)
+    private fun createApiKeyWithSession(hostName: String, login: JSONObject, keyName: String): SignedInAccount {
+        val accessToken = login.optString("accessToken").ifEmpty {
+            throw LoginException("No access token returned by the server")
+        }
         try {
-            return try {
+            val apiKey = try {
                 createKey(hostName, accessToken, keyName, PERMISSIONS)
             } catch (e: UnknownPermissionException) {
                 // Older servers don't know every permission listed below
                 Timber.w(e, "Server rejected the permission list, falling back to 'all'")
                 createKey(hostName, accessToken, keyName, listOf("all"))
             }
+            val email = login.optString("userEmail")
+            return SignedInAccount(apiKey, login.optString("name").ifEmpty { email }, email)
         } finally {
             // The session is only needed to create the key
             logout(hostName, accessToken)
-        }
-    }
-
-    private fun login(hostName: String, email: String, password: String): String {
-        val body = JSONObject().put("email", email).put("password", password)
-        execute(post("$hostName/api/auth/login", body)).use { response ->
-            if (response.code == 401 || response.code == 400) {
-                throw LoginException(errorMessage(response) ?: "Invalid email or password")
-            }
-            ensureSuccess(response)
-            return JSONObject(response.body?.string().orEmpty()).optString("accessToken").ifEmpty {
-                throw LoginException("No access token returned by the server")
-            }
         }
     }
 

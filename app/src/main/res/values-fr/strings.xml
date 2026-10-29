@@ -229,6 +229,12 @@
     <string name="local_sign_in_or_password">Ou avec e-mail et mot de passe</string>
     <string name="local_sign_in_sso_redirect">Pour le SSO, le fournisseur d’identité doit autoriser cette URI de redirection pour Immich (adresse fixe : donnez une IP fixe à la TV) :</string>
     <string name="local_sign_in_sso_not_started">Aucune connexion SSO en cours pour cette page. Rouvrez l’adresse affichée sur la TV et recommencez.</string>
+    <string name="profiles_title">Qui regarde ?</string>
+    <string name="profiles_description">Choisissez le compte Immich à utiliser sur cette TV.</string>
+    <string name="profiles_active">actif</string>
+    <string name="profiles_add">Ajouter un compte</string>
+    <string name="profiles_remove">Supprimer un compte</string>
+    <string name="profiles_settings">Comptes</string>
     <string name="local_sign_in_notice">Cette page est servie par votre TV sur votre réseau local. Votre mot de passe n’est envoyé qu’à votre propre serveur Immich, qui crée pour la TV une clé API limitée à ce dont l’appli a besoin. Vous pouvez la révoquer à tout moment dans Immich : Paramètres du compte, Clés API.</string>
     <string name="local_sign_in_success">Connecté ! Vous pouvez fermer cette page.</string>
     <string name="local_sign_in_failed">Échec de la connexion</string>
