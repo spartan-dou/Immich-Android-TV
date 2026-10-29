@@ -8,4 +8,6 @@ data class Card(
     override val backgroundUrl: String?,
     override var selected: Boolean = false,
     // Photo grids show the picture only (no file name footer)
-    val imageOnly: Boolean = false) : ICard
+    val imageOnly: Boolean = false,
+    // Without the file name, a play badge is what tells videos apart in the grids
+    val isVideo: Boolean = false) : ICard

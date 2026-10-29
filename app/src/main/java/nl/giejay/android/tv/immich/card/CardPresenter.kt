@@ -27,6 +27,9 @@ open class CardPresenter(context: Context, style: Int = R.style.DefaultCardTheme
             cardView.contentText = card.description
         }
         setSelected(cardView, card.selected)
+        // Views are recycled: always reset the badge
+        cardView.mainImageView?.foreground =
+            if ((card as? Card)?.isVideo == true) context.getDrawable(R.drawable.video_badge_overlay) else null
     }
 
     override fun onUnbindViewHolder(viewHolder: ViewHolder) {

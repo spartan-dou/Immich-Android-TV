@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Play badge in the bottom right corner of video thumbnails (same badge as the timeline) -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:width="36dp"
+        android:height="36dp"
+        android:bottom="10dp"
+        android:end="10dp"
+        android:gravity="bottom|end"
+        android:drawable="@drawable/ic_video_badge_play" />
+</layer-list>
