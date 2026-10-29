@@ -9,13 +9,15 @@ import org.json.JSONArray
 import org.json.JSONObject
 import timber.log.Timber
 import java.io.IOException
+import java.security.MessageDigest
+import java.security.SecureRandom
 import java.util.concurrent.TimeUnit
 
 class LoginException(message: String) : Exception(message)
 
 /**
- * Exchanges Immich credentials for an API key, directly against the user's own server:
- * login -> create a read-only API key -> logout. The rest of the app keeps using API keys only.
+ * Exchanges Immich credentials (password or SSO) for an API key, directly against the user's own
+ * server: login -> create an API key -> logout. The rest of the app keeps using API keys only.
  */
 class ImmichLoginClient(
     private val client: OkHttpClient = OkHttpClient.Builder()
@@ -24,8 +26,39 @@ class ImmichLoginClient(
         .build()
 ) {
 
-    fun createApiKey(hostName: String, email: String, password: String, keyName: String): String {
-        val accessToken = login(hostName, email, password)
+    fun createApiKey(hostName: String, email: String, password: String, keyName: String): String =
+        createApiKeyWithSession(hostName, login(hostName, email, password), keyName)
+
+    /** Starts an SSO sign-in: returns the identity provider URL the phone must open. */
+    fun startOAuth(hostName: String, redirectUri: String, state: String, codeChallenge: String): String {
+        val body = JSONObject()
+            .put("redirectUri", redirectUri)
+            .put("state", state)
+            .put("codeChallenge", codeChallenge)
+        execute(post("$hostName/api/oauth/authorize", body)).use { response ->
+            ensureSuccess(response)
+            return JSONObject(response.body?.string().orEmpty()).optString("url").ifEmpty {
+                throw LoginException("No SSO URL returned by the server")
+            }
+        }
+    }
+
+    /** Finishes an SSO sign-in from the URL the identity provider redirected the phone to. */
+    fun createApiKeyWithOAuth(hostName: String, callbackUrl: String, state: String, codeVerifier: String, keyName: String): String {
+        val body = JSONObject()
+            .put("url", callbackUrl)
+            .put("state", state)
+            .put("codeVerifier", codeVerifier)
+        val accessToken = execute(post("$hostName/api/oauth/callback", body)).use { response ->
+            ensureSuccess(response)
+            JSONObject(response.body?.string().orEmpty()).optString("accessToken").ifEmpty {
+                throw LoginException("No access token returned by the server")
+            }
+        }
+        return createApiKeyWithSession(hostName, accessToken, keyName)
+    }
+
+    private fun createApiKeyWithSession(hostName: String, accessToken: String, keyName: String): String {
         try {
             return try {
                 createKey(hostName, accessToken, keyName, PERMISSIONS)
@@ -103,6 +136,33 @@ class ImmichLoginClient(
 
     companion object {
         private val JSON = "application/json; charset=utf-8".toMediaType()
+
+        // PKCE (RFC 7636): random verifier, S256 challenge sent to the identity provider
+        fun newCodeVerifier(): String = randomUrlSafe(32)
+
+        fun codeChallenge(verifier: String): String =
+            base64Url(MessageDigest.getInstance("SHA-256").digest(verifier.toByteArray(Charsets.US_ASCII)))
+
+        fun newState(): String = randomUrlSafe(16)
+
+        private fun randomUrlSafe(bytes: Int): String =
+            base64Url(ByteArray(bytes).also { SecureRandom().nextBytes(it) })
+
+        private const val BASE64_URL_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
+
+        // Unpadded base64url, written out because java.util.Base64 needs API 26 (not desugared)
+        // and android.util.Base64 isn't available in plain JVM unit tests
+        internal fun base64Url(bytes: ByteArray): String = buildString {
+            for (i in bytes.indices step 3) {
+                val chunk = (bytes[i].toInt() and 0xff shl 16) or
+                    ((bytes.getOrNull(i + 1)?.toInt() ?: 0) and 0xff shl 8) or
+                    ((bytes.getOrNull(i + 2)?.toInt() ?: 0) and 0xff)
+                val chars = when (bytes.size - i) { 1 -> 2; 2 -> 3; else -> 4 }
+                for (j in 0 until chars) {
+                    append(BASE64_URL_ALPHABET[(chunk shr (18 - 6 * j)) and 0x3f])
+                }
+            }
+        }
 
         // Same list as "Required API Permissions" in the README
         val PERMISSIONS = listOf(
