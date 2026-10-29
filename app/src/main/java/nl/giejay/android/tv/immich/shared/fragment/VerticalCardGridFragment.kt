@@ -213,9 +213,9 @@ abstract class VerticalCardGridFragment<ITEM> : GridFragment() {
         if (!isSortable) return
         setOnSearchClickedListener { openPopUpMenu() }
         (titleView as? TitleView)?.let { title ->
-            val accent = requireContext().getColor(R.color.immich_accent)
             val searchOrb = title.searchAffordanceView as? SearchOrbView
-            searchOrb?.setOrbColors(SearchOrbView.Colors(requireContext().getColor(R.color.nav_pill_focused), accent, accent))
+            // White icon on navy at rest, on Immich blue when focused
+            searchOrb?.setOrbColors(SearchOrbView.Colors(requireContext().getColor(R.color.nav_pill_focused), requireContext().getColor(R.color.immich_primary), android.graphics.Color.WHITE))
             requireContext().getDrawable(R.drawable.ic_sort)?.let { searchOrb?.setOrbIcon(it) }
             searchOrb?.contentDescription = getString(R.string.order)
         }
@@ -265,6 +265,8 @@ abstract class VerticalCardGridFragment<ITEM> : GridFragment() {
 
     private fun setupAdapter() {
         val presenter = VerticalGridPresenter(ZOOM_FACTOR)
+        // Shadow and focus-dim overlay follow the cards' rounded corners (lb_rounded_rect_corner_radius)
+        presenter.enableChildRoundedCorners(true)
         presenter.numberOfColumns = COLUMNS
         gridPresenter = presenter
         val cardPresenter = CardPresenterSelector(requireContext())

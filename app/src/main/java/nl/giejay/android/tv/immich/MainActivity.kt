@@ -97,6 +97,16 @@ class MainActivity : FragmentActivity() {
         return super.onKeyDown(keyCode, event)
     }
 
+    // Menu is caught before the focused view (e.g. the grids' sort button) gets a chance to eat it,
+    // so it always opens the current grid's menu
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (event.keyCode == KeyEvent.KEYCODE_MENU && event.action == KeyEvent.ACTION_DOWN) {
+            keyEventsModel.postKeyEvent(event)
+            return true
+        }
+        return super.dispatchKeyEvent(event)
+    }
+
     /**
      * Checks if the app was started with a deep link, loading it if it was
      *

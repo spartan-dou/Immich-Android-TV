@@ -35,6 +35,7 @@ import timber.log.Timber
 class HomeFragment : BrowseSupportFragment() {
     private lateinit var mRowsAdapter: ArrayObjectAdapter
     private lateinit var rows: List<PageRow>
+    private val profileRow = SectionRow(HeaderItem(-1, "profile"))
     val immichRowPresenter = ImmichRowPresenter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,10 +47,19 @@ class HomeFragment : BrowseSupportFragment() {
         loadData()
 
         mainFragmentRegistry.registerFragment(PageRow::class.java, PageRowFragmentFactory())
+        // The profile row is never a page: a light empty fragment instead of Leanback's default rows
+        mainFragmentRegistry.registerFragment(SectionRow::class.java, object : FragmentFactory<Fragment>() {
+            override fun createFragment(row: Any): Fragment = GridFragment(hideProgressBar = true)
+        })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (savedInstanceState == null) {
+            // Row 0 is the (non-focusable) profile header: start on the first page. Must happen
+            // once the view exists, Leanback posts the selection on it.
+            selectedPosition = 1
+        }
         headersSupportFragment.setOnHeaderViewSelectedListener { _, row ->
             selectedPosition = row?.let { mRowsAdapter.indexOf(it) } ?: 0
             val name = row?.headerItem?.name ?: "-"
@@ -68,10 +78,12 @@ class HomeFragment : BrowseSupportFragment() {
                 immichRowPresenter.editMode = !immichRowPresenter.editMode
                 if(immichRowPresenter.editMode){
                     mRowsAdapter.clear()
-                    mRowsAdapter.addAll(0, rows.filter { it.headerItem.name != getString(R.string.settings) })
+                    mRowsAdapter.add(profileRow)
+                    mRowsAdapter.addAll(1, rows.filter { it.headerItem.name != getString(R.string.settings) })
                 } else {
                     mRowsAdapter.clear();
-                    mRowsAdapter.addAll(0, rows.filter { !PreferenceManager.itemInStringSet(it.headerItem.name, HIDDEN_HOME_ITEMS) })
+                    mRowsAdapter.add(profileRow)
+                    mRowsAdapter.addAll(1, rows.filter { !PreferenceManager.itemInStringSet(it.headerItem.name, HIDDEN_HOME_ITEMS) })
                 }
                 adapter.notifyItemRangeChanged(0, mRowsAdapter.size());
             } else if(immichRowPresenter.editMode){
@@ -104,7 +116,7 @@ class HomeFragment : BrowseSupportFragment() {
             .addClassPresenter(DividerRow::class.java, DividerPresenter())
             .addClassPresenter(
                 SectionRow::class.java,
-                RowHeaderPresenter()
+                ProfileHeaderPresenter()
             )
             .addClassPresenter(Row::class.java, immichRowPresenter)
 
@@ -115,7 +127,9 @@ class HomeFragment : BrowseSupportFragment() {
         mRowsAdapter = ArrayObjectAdapter(ListRowPresenter())
         adapter = mRowsAdapter
         rows = createRows()
-        mRowsAdapter.addAll(0, rows.filter { !PreferenceManager.itemInStringSet(it.headerItem.name, HIDDEN_HOME_ITEMS) })
+        // Active account on top of the menu (non-focusable), the first page right below it
+        mRowsAdapter.add(profileRow)
+        mRowsAdapter.addAll(1, rows.filter { !PreferenceManager.itemInStringSet(it.headerItem.name, HIDDEN_HOME_ITEMS) })
     }
 
     private fun createRows(): List<PageRow> {

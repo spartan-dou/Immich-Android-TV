@@ -1,23 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Left menu item, Immich mobile style: icon + label in a rounded pill that lights up on focus.
-     The label stays the focusable view (Leanback's header click handling relies on it), the
-     root mirrors its state through addStatesFromChildren to draw the pill. -->
+     The label stays the focusable view (Leanback's header click handling relies on it);
+     ImmichRowPresenter marks the root and icon "selected" while it has focus, which draws the
+     pill (mirroring states between parent and child with XML attributes recurses forever). -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="52dp"
+    android:layout_height="46dp"
     android:layout_marginVertical="2dp"
     android:gravity="center_vertical"
     android:paddingStart="18dp"
     android:paddingEnd="18dp"
-    android:addStatesFromChildren="true"
     android:background="@drawable/header_row_background">
     <ImageView
         android:id="@+id/header_icon"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginEnd="16dp"
-        android:duplicateParentState="true"
         android:importantForAccessibility="no"
         android:tint="@color/nav_item_content" />
     <ImageView
@@ -30,7 +29,7 @@
         android:layout_height="22dp"></ImageView>
     <TextView android:id="@+id/tvTitle"
         android:layout_width="match_parent"
-        android:textSize="18sp"
+        android:textSize="17sp"
         android:textColor="@color/nav_item_content"
         android:singleLine="true"
         android:ellipsize="end"

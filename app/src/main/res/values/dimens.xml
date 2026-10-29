@@ -47,6 +47,11 @@
     <dimen name="action_button_padding_horizontal">20dp</dimen>
 
     <dimen name="card_corner_radius">12dp</dimen>
+    <!-- Leanback overrides: shadow/dim overlay rounded like the cards (default 2dp left gray
+         corners behind unfocused cards), tighter and slimmer left menu -->
+    <dimen name="lb_rounded_rect_corner_radius">12dp</dimen>
+    <dimen name="lb_browse_headers_vertical_spacing">2dp</dimen>
+    <dimen name="lb_browse_headers_width">250dp</dimen>
     <dimen name="default_image_card_width">206dp</dimen>
     <dimen name="default_image_card_height">116dp</dimen>
 
