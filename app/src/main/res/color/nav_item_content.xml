@@ -2,5 +2,6 @@
 <!-- Left menu icon/text: accent when focused (inside the pill), soft white otherwise -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:color="@color/immich_accent" android:state_focused="true" />
+    <item android:color="@color/immich_accent" android:state_selected="true" />
     <item android:color="@color/nav_item_text" />
 </selector>

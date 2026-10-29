@@ -348,4 +348,11 @@
     <style name="ProgressBar" parent="AppTheme">
         <item name="colorAccent">@color/progressbarColor</item>
     </style>
+    <!-- Dialogs (sort picker...): rounded navy panel, Immich accent -->
+    <style name="ImmichDialogTheme" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:windowBackground">@drawable/dialog_background</item>
+        <item name="colorAccent">@color/immich_accent</item>
+        <item name="android:textColorPrimary">@color/screen_white</item>
+        <item name="android:textColorSecondary">@color/nav_item_text</item>
+    </style>
 </resources>

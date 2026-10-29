@@ -16,7 +16,7 @@ object SortChooser {
             where T : Enum<T>, T : EnumWithTitle {
         val entries = pref.getEnumEntries()
         val current = PreferenceManager.get(pref)
-        AlertDialog.Builder(context)
+        AlertDialog.Builder(context, R.style.ImmichDialogTheme)
             .setTitle(R.string.order)
             .setSingleChoiceItems(entries.map { it.getTitle() }.toTypedArray(), entries.indexOf(current)) { dialog, which ->
                 PreferenceManager.save(pref, entries[which])

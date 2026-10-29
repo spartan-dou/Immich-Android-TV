@@ -17,6 +17,11 @@ class ImmichRowPresenter : Presenter() {
             .inflate(R.layout.presenter_row, parent, false)
 
         val viewHolder = ImmichRowViewHolder(root)
+        // The label holds the focus: light up the whole pill (and the icon) while it does
+        viewHolder.tvTitle.setOnFocusChangeListener { _, hasFocus ->
+            root.isSelected = hasFocus
+            viewHolder.headerIcon.isSelected = hasFocus
+        }
         return viewHolder
     }
 
