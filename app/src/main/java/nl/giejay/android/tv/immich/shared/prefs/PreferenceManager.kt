@@ -180,8 +180,15 @@ object PreferenceManager {
     }
 
     fun getAllMetaData(metaDataScreen: MetaDataScreen): List<MetaDataItem> {
-        return getMetaData(AlignOption.RIGHT, metaDataScreen) + getMetaData(AlignOption.LEFT, metaDataScreen)
+        val items = getMetaData(AlignOption.RIGHT, metaDataScreen) + getMetaData(AlignOption.LEFT, metaDataScreen)
+        // SHOW_DATES is the master switch over every per-screen date setting
+        return if (get(SHOW_DATES)) items else items.filterNot { it.type == MetaDataType.DATE }
     }
+
+    /** Date in the top left corner of the viewer/screensaver, unless dates are hidden everywhere. */
+    fun showDateTopLeft(screen: MetaDataScreen): Boolean = get(SHOW_DATES) && get(
+        if (screen == MetaDataScreen.SCREENSAVER) SCREENSAVER_SHOW_DATE_TOP_LEFT else SLIDER_SHOW_DATE_TOP_LEFT
+    )
 
     fun hasMetaDataForScreen(metaDataScreen: MetaDataScreen, align: AlignOption): Boolean {
         return sharedPreference.contains(createKey(metaDataScreen, align))

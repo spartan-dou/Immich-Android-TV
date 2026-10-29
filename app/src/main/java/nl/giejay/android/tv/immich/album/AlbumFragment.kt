@@ -6,6 +6,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import arrow.core.Either
 import kotlinx.coroutines.launch
+import java.util.Calendar
+import nl.giejay.android.tv.immich.R
+import nl.giejay.android.tv.immich.shared.prefs.SHOW_DATES
+import nl.giejay.android.tv.immich.shared.util.SortChooser
 import nl.giejay.android.tv.immich.api.ApiClient
 import nl.giejay.android.tv.immich.api.model.Album
 import nl.giejay.android.tv.immich.api.util.ApiUtil
@@ -117,20 +121,34 @@ class AlbumFragment : VerticalCardGridFragment<Album>() {
     }
 
     override fun openPopUpMenu() {
-        findNavController().navigate(
-            HomeFragmentDirections.actionGlobalToSettingsDialog("view")
-        )
+        SortChooser.show(requireContext(), ALBUMS_SORTING) {
+            findNavController().navigate(
+                HomeFragmentDirections.actionGlobalToSettingsDialog("view")
+            )
+        }
     }
 
     override fun createCard(a: Album): Card {
         return Card(
             a.albumName,
-            a.description,
+            albumSummary(a),
             a.id,
-            ApiUtil.getThumbnailUrl(a.albumThumbnailAssetId, "thumbnail"),
+            // The 250 px "thumbnail" looks blurry once stretched on the card: Glide downsamples
+            // the preview to the card size, so it doesn't cost more memory
+            ApiUtil.getThumbnailUrl(a.albumThumbnailAssetId, "preview"),
             getBackgroundPicture(a),
             if (selectionMode) PreferenceManager.get(selectionTypeKey).contains(a.id) else false
         )
+    }
+
+    // "149 photos · 2024 – 2025" instead of the raw description
+    private fun albumSummary(album: Album): String {
+        val count = resources.getQuantityString(R.plurals.album_item_count, album.assetCount, album.assetCount)
+        if (!PreferenceManager.get(SHOW_DATES)) return count
+        val years = listOfNotNull(album.startDate, album.endDate)
+            .map { Calendar.getInstance().apply { time = it }.get(Calendar.YEAR) }
+            .distinct()
+        return if (years.isEmpty()) count else "$count · ${years.joinToString(" – ")}"
     }
 
     override fun onDestroyView() {

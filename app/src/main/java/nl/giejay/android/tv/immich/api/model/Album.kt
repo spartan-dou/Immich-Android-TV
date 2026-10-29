@@ -8,6 +8,7 @@ data class Album(
     val id: String,
     val albumThumbnailAssetId: String?,
     val updatedAt: Date,
+    val startDate: Date? = null,
     val endDate: Date?,
     val assetCount: Int
 )

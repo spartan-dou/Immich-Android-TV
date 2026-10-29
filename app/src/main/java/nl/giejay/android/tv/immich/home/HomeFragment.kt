@@ -90,7 +90,7 @@ class HomeFragment : BrowseSupportFragment() {
     private fun setupUi() {
         headersState = HEADERS_ENABLED
         isHeadersTransitionOnBackEnabled = true
-        brandColor = resources.getColor(android.R.color.black)
+        brandColor = resources.getColor(R.color.brand_header)
         // First page is Timeline, which never shows a Browse title.
         title = ""
         showTitle(false)
