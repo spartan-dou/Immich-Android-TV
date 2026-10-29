@@ -6,4 +6,6 @@ data class Card(
     override val id: String,
     override val thumbnailUrl: String?,
     override val backgroundUrl: String?,
-    override var selected: Boolean = false) : ICard
+    override var selected: Boolean = false,
+    // Photo grids show the picture only (no file name footer)
+    val imageOnly: Boolean = false) : ICard

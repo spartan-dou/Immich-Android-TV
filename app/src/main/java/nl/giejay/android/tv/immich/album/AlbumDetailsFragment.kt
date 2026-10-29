@@ -2,7 +2,9 @@ package nl.giejay.android.tv.immich.album
 
 import androidx.navigation.fragment.findNavController
 import arrow.core.Either
+import nl.giejay.android.tv.immich.shared.util.SortChooser
 import nl.giejay.android.tv.immich.api.ApiClient
+import nl.giejay.android.tv.immich.api.MAX_SEARCH_PAGE_SIZE
 import nl.giejay.android.tv.immich.api.model.Asset
 import nl.giejay.android.tv.immich.assets.GenericAssetFragment
 import nl.giejay.android.tv.immich.card.Card
@@ -31,6 +33,13 @@ class AlbumDetailsFragment : GenericAssetFragment() {
     }
 
     override suspend fun loadItems(apiClient: ApiClient, page: Int, pageCount: Int): Either<String, List<Asset>> {
+        if (!currentSort.isDateOrder) {
+            // Name/favorites/random orders need every asset: load the whole album once, sorted
+            // client-side by setData (the server only pages by date)
+            if (page > startPage) return Either.Right(emptyList())
+            return apiClient.listAssetsFromAlbum(listOf(albumId), currentFilter, MAX_SEARCH_PAGE_SIZE)
+                .map { it.assets.map { a -> a.copy(albumName = albumName) } }
+        }
         return apiClient.listAssets(
             page = page,
             pageCount = pageCount,
@@ -45,9 +54,11 @@ class AlbumDetailsFragment : GenericAssetFragment() {
     }
 
     override fun openPopUpMenu() {
-        findNavController().navigate(
-            HomeFragmentDirections.actionGlobalToSettingsDialog("album_details", albumId, albumName)
-        )
+        SortChooser.show(requireContext(), getSortingKey()) {
+            findNavController().navigate(
+                HomeFragmentDirections.actionGlobalToSettingsDialog("album_details", albumId, albumName)
+            )
+        }
     }
 
     override fun setTitle(response: List<Asset>) {

@@ -16,7 +16,12 @@
 
 <resources>
     <!-- Warm dark gray for backgrounds -->
-    <color name="gray_dark">#212121</color>
+    <color name="gray_dark">#15171C</color>
+    <!-- Immich brand colors -->
+    <color name="immich_primary">#4250AF</color>
+    <color name="immich_primary_light">#6E7CD6</color>
+    <color name="brand_header">#101218</color>
+    <color name="card_info_background">#1E2129</color>
 
     <color name="black">#000000</color>
 
@@ -44,8 +49,8 @@
 
     <color name="error_text">#EF9A9A</color>
 
-    <color name="settings_card_background">#0277BD</color>
-    <color name="settings_card_background_focussed">#01579B</color>
+    <color name="settings_card_background">@color/immich_primary</color>
+    <color name="settings_card_background_focussed">@color/immich_primary_light</color>
 
     <color name="progressbarColor">#ffffff</color>
 

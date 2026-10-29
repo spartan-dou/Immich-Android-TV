@@ -427,12 +427,13 @@ object FILTER_CONTENT_TYPE : EnumByTitlePref<ContentType>(ContentType.ALL,
 data object ALL_ASSETS_SORTING : EnumByTitlePref<PhotosOrder>(PhotosOrder.NEWEST_OLDEST,
     ImmichApplication.appContext!!.getString(R.string.assets_outside_albums),
     ImmichApplication.appContext!!.getString(R.string.assets_outside_albums_desc)) {
+    // The whole library can't be loaded at once to be sorted client-side: date orders only
     override fun fromPrefValue(prefValue: String): PhotosOrder {
-        return PhotosOrder.valueOfSafe(prefValue, defaultValue)
+        return PhotosOrder.valueOfSafe(prefValue, defaultValue).takeIf { it.isDateOrder } ?: defaultValue
     }
 
     override fun getEnumEntries(): Array<PhotosOrder> {
-        return PhotosOrder.entries.toTypedArray()
+        return PhotosOrder.dateOrders
     }
 }
 
@@ -575,10 +576,16 @@ data object ViewContentPrefScreen : PrefScreen(ImmichApplication.appContext!!.ge
     )
 )
 
+// Master switch: when off, no date is shown anywhere, whatever the per-screen date settings
+data object SHOW_DATES : BooleanPref(true,
+    ImmichApplication.appContext!!.getString(R.string.show_dates),
+    ImmichApplication.appContext!!.getString(R.string.show_dates_desc))
+
 data object ViewGeneralPrefScreen : PrefScreen(ImmichApplication.appContext!!.getString(R.string.general), "view_general",
     listOf(
         PrefCategory("", listOf(
-            LOAD_BACKGROUND_IMAGE
+            LOAD_BACKGROUND_IMAGE,
+            SHOW_DATES
         ))
     )
 )

@@ -52,7 +52,7 @@ abstract class VerticalCardGridFragment<ITEM> : GridFragment() {
 
     protected lateinit var apiClient: ApiClient
     private lateinit var keyEvents: KeyEventsViewModel
-    private val ZOOM_FACTOR = FocusHighlight.ZOOM_FACTOR_SMALL
+    private val ZOOM_FACTOR = FocusHighlight.ZOOM_FACTOR_MEDIUM
     protected val ioScope = CoroutineScope(Job() + Dispatchers.IO)
     private val mainScope = CoroutineScope(Job() + Dispatchers.Main)
     private val assetsStillToRender: MutableList<ITEM> = mutableListOf()
@@ -186,6 +186,8 @@ abstract class VerticalCardGridFragment<ITEM> : GridFragment() {
 
     protected open fun clearState() {
         currentPage = startPage
+        // Otherwise a re-sort/re-filter after the last page was reached would stop at page 1
+        allPagesLoaded = false
         assets = emptyList()
         assetsStillToRender.clear()
         adapter.clear()

@@ -207,6 +207,12 @@
     <style name="DefaultCardTheme" parent="Theme.Leanback">
         <item name="imageCardViewStyle">@style/DefaultCardStyle</item>
         <item name="imageCardViewImageStyle">@style/DefaultCardImageStyle</item>
+        <item name="imageCardViewInfoAreaStyle">@style/DefaultCardInfoAreaStyle</item>
+    </style>
+
+    <!-- Card footer (album name + summary) matching the app background -->
+    <style name="DefaultCardInfoAreaStyle" parent="Widget.Leanback.ImageCardView.InfoAreaStyle">
+        <item name="android:background">@color/card_info_background</item>
     </style>
 
     <!-- Timeline rows: thumbnail only, no title/content footer. -->

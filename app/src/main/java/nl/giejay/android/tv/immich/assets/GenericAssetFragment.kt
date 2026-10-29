@@ -10,6 +10,7 @@ import arrow.core.getOrElse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import nl.giejay.android.tv.immich.shared.util.SortChooser
 import nl.giejay.android.tv.immich.shared.util.isHiddenRawPhoto
 import nl.giejay.android.tv.immich.album.AlbumDetailsFragmentDirections
 import nl.giejay.android.tv.immich.api.MAX_SEARCH_PAGE_SIZE
@@ -38,7 +39,6 @@ import nl.giejay.android.tv.immich.shared.prefs.SLIDER_MAX_CUT_OFF_WIDTH
 import nl.giejay.android.tv.immich.shared.prefs.SLIDER_MERGE_PORTRAIT_PHOTOS
 import nl.giejay.android.tv.immich.shared.prefs.SLIDER_ONLY_USE_THUMBNAILS
 import nl.giejay.android.tv.immich.shared.prefs.SLIDER_PAN_EFFECT
-import nl.giejay.android.tv.immich.shared.prefs.SLIDER_SHOW_DATE_TOP_LEFT
 import nl.giejay.android.tv.immich.shared.prefs.SLIDER_ZOOM_EFFECT
 import nl.giejay.android.tv.immich.shared.prefs.SLIDER_ZOOM_SCROLL_PANORAMAS
 import nl.giejay.android.tv.immich.shared.util.Utils.pmap
@@ -121,9 +121,11 @@ abstract class GenericAssetFragment : VerticalCardGridFragment<Asset>() {
     }
 
     override fun openPopUpMenu() {
-        findNavController().navigate(
-            HomeFragmentDirections.actionGlobalToSettingsDialog("generic_asset_settings")
-        )
+        SortChooser.show(requireContext(), getSortingKey()) {
+            findNavController().navigate(
+                HomeFragmentDirections.actionGlobalToSettingsDialog("generic_asset_settings")
+            )
+        }
     }
 
     /**
@@ -173,7 +175,7 @@ abstract class GenericAssetFragment : VerticalCardGridFragment<Asset>() {
                     panEffectPercent = PreferenceManager.get(SLIDER_PAN_EFFECT),
                     useLargeVideoBuffer = PreferenceManager.get(SLIDER_FORCE_ORIGINAL_VIDEO),
                     dpadSeeksInVideo = PreferenceManager.get(SLIDER_DPAD_SEEK_IN_VIDEO),
-                    showDateTopLeft = PreferenceManager.get(SLIDER_SHOW_DATE_TOP_LEFT)
+                    showDateTopLeft = PreferenceManager.showDateTopLeft(MetaDataScreen.VIEWER)
                 )
                 sliderViewModel.configuration = config
                 findNavController().navigate(AlbumDetailsFragmentDirections.actionToPhotoSlider())
