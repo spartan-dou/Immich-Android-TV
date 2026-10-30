@@ -547,6 +547,9 @@ data object ViewSlideshowEffectsPrefScreen : PrefScreen(ImmichApplication.appCon
 data object ViewSlideshowPrefScreen : PrefScreen(ImmichApplication.appContext!!.getString(R.string.slideshow), "view_slideshow",
     listOf(
         PrefCategory("", listOf(
+            // Where people look for them when a photo is open full screen
+            SHOW_DATES,
+            SHOW_LOCATION,
             ActionPref("view_slideshow_display", ImmichApplication.appContext!!.getString(R.string.display), ImmichApplication.appContext!!.getString(R.string.display_desc)) { _, navController ->
                 navController.navigate(AlbumFragmentDirections.actionGlobalToSettingsDialog("view_slideshow_display"))
                 true
@@ -580,6 +583,10 @@ data object ViewContentPrefScreen : PrefScreen(ImmichApplication.appContext!!.ge
 data object SHOW_DATES : BooleanPref(true,
     ImmichApplication.appContext!!.getString(R.string.show_dates),
     ImmichApplication.appContext!!.getString(R.string.show_dates_desc))
+
+data object SHOW_LOCATION : BooleanPref(true,
+    ImmichApplication.appContext!!.getString(R.string.show_location),
+    ImmichApplication.appContext!!.getString(R.string.show_location_desc))
 
 data object BLUR_BACKGROUND : BooleanPref(true,
     ImmichApplication.appContext!!.getString(R.string.blur_background),

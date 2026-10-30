@@ -242,6 +242,8 @@
     <string name="more_settings">Plus de réglages</string>
     <string name="show_dates">Afficher les dates</string>
     <string name="show_dates_desc">Interrupteur général : désactivé, aucune date n’est affichée nulle part (visionneuse, économiseur, albums), quels que soient les autres réglages de date.</string>
+    <string name="show_location">Afficher le lieu</string>
+    <string name="show_location_desc">Interrupteur général : désactivé, la ville et le pays des photos sont masqués partout (visionneuse, économiseur), quels que soient les autres réglages.</string>
     <string name="blur_background">Fond flouté</string>
     <string name="blur_background_desc">Fond façon verre dépoli derrière les grilles, calculé sur une petite image pour rester léger.</string>
     <plurals name="album_item_count">

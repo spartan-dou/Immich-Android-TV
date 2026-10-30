@@ -58,8 +58,8 @@ class ImmichRowPresenter : Presenter() {
     companion object {
         // Same order as HomeFragment's HEADERS
         private val HEADER_ICONS = listOf(
-            R.drawable.ic_nav_timeline,
             R.drawable.ic_nav_albums,
+            R.drawable.ic_nav_timeline,
             R.drawable.ic_nav_photos,
             R.drawable.ic_nav_random,
             R.drawable.ic_nav_people,

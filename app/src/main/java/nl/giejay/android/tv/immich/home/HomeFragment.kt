@@ -47,11 +47,14 @@ class HomeFragment : BrowseSupportFragment() {
         loadData()
 
         mainFragmentRegistry.registerFragment(PageRow::class.java, PageRowFragmentFactory())
-        // The profile row is never a page: a light empty fragment instead of Leanback's default rows
+        // The profile row is never a page, but Leanback starts on it and doesn't reliably swap to
+        // the start page selected below: show the first page for it so the app opens on it
+        mainFragmentRegistry.registerFragment(SectionRow::class.java, object : FragmentFactory<Fragment>() {
+            override fun createFragment(row: Any): Fragment = HEADERS[0].fragment()
+        })
         val emptyPage = object : FragmentFactory<Fragment>() {
             override fun createFragment(row: Any): Fragment = GridFragment(hideProgressBar = true)
         }
-        mainFragmentRegistry.registerFragment(SectionRow::class.java, emptyPage)
         mainFragmentRegistry.registerFragment(DividerRow::class.java, emptyPage)
     }
 
@@ -100,9 +103,8 @@ class HomeFragment : BrowseSupportFragment() {
         headersState = HEADERS_ENABLED
         isHeadersTransitionOnBackEnabled = true
         brandColor = resources.getColor(R.color.brand_header)
-        // First page is Timeline, which never shows a Browse title.
-        title = ""
-        showTitle(false)
+        // First page is Albums
+        title = getString(R.string.albums)
 //        setOnSearchClickedListener {
 //            Toast.makeText(
 //                activity, "Search!", Toast.LENGTH_SHORT
@@ -152,12 +154,13 @@ class HomeFragment : BrowseSupportFragment() {
 
     companion object {
         private val HEADERS: List<Header> = listOf(
-            Header(ImmichApplication.appContext!!.getString(R.string.timeline)) { TimelineFragment() },
+            // Albums first: it is the page shown when the app opens
             Header(ImmichApplication.appContext!!.getString(R.string.albums)) {
                 AlbumFragment().apply {
                     arguments = bundleOf("selectionMode" to false)
                 }
             },
+            Header(ImmichApplication.appContext!!.getString(R.string.timeline)) { TimelineFragment() },
             Header(ImmichApplication.appContext!!.getString(R.string.photos)) { AllAssetFragment() },
             Header(ImmichApplication.appContext!!.getString(R.string.random)) { RandomAssetsFragment() },
             Header(ImmichApplication.appContext!!.getString(R.string.people)) { PeopleFragment() },
