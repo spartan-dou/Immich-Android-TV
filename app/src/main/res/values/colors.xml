@@ -26,7 +26,10 @@
     <!-- Immich mobile dark theme accent -->
     <color name="immich_accent">#ACCBFA</color>
     <color name="nav_pill_focused">#2C3558</color>
-    <color name="nav_item_text">#C9CCD4</color>
+    <!-- Left menu: light accent pill with dark content, like Immich web's active nav item -->
+    <color name="nav_pill_active">@color/immich_accent</color>
+    <color name="nav_item_content_active">#14204A</color>
+    <color name="nav_item_text">#B4B9C4</color>
 
     <color name="black">#000000</color>
 

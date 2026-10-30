@@ -51,7 +51,10 @@
          corners behind unfocused cards), tighter and slimmer left menu -->
     <dimen name="lb_rounded_rect_corner_radius">12dp</dimen>
     <dimen name="lb_browse_headers_vertical_spacing">2dp</dimen>
-    <dimen name="lb_browse_headers_width">250dp</dimen>
+    <dimen name="lb_browse_headers_width">240dp</dimen>
+    <!-- No zoom on the focused menu item (it made the pill bigger than the other rows) -->
+    <item name="lb_browse_header_select_scale" format="float" type="dimen">1.0</item>
+    <item name="lb_browse_header_unselect_alpha" type="fraction">70%</item>
     <dimen name="default_image_card_width">206dp</dimen>
     <dimen name="default_image_card_height">116dp</dimen>
 
