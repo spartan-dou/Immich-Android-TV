@@ -181,8 +181,12 @@ object PreferenceManager {
 
     fun getAllMetaData(metaDataScreen: MetaDataScreen): List<MetaDataItem> {
         val items = getMetaData(AlignOption.RIGHT, metaDataScreen) + getMetaData(AlignOption.LEFT, metaDataScreen)
-        // SHOW_DATES is the master switch over every per-screen date setting
-        return if (get(SHOW_DATES)) items else items.filterNot { it.type == MetaDataType.DATE }
+        // SHOW_DATES / SHOW_LOCATION are master switches over every per-screen setting
+        val hidden = buildSet {
+            if (!get(SHOW_DATES)) addAll(listOf(MetaDataType.DATE, MetaDataType.TIME))
+            if (!get(SHOW_LOCATION)) addAll(listOf(MetaDataType.CITY, MetaDataType.COUNTRY))
+        }
+        return items.filterNot { it.type in hidden }
     }
 
     /** Date in the top left corner of the viewer/screensaver, unless dates are hidden everywhere. */
