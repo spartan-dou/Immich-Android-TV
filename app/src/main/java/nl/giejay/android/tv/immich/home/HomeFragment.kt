@@ -48,9 +48,11 @@ class HomeFragment : BrowseSupportFragment() {
 
         mainFragmentRegistry.registerFragment(PageRow::class.java, PageRowFragmentFactory())
         // The profile row is never a page: a light empty fragment instead of Leanback's default rows
-        mainFragmentRegistry.registerFragment(SectionRow::class.java, object : FragmentFactory<Fragment>() {
+        val emptyPage = object : FragmentFactory<Fragment>() {
             override fun createFragment(row: Any): Fragment = GridFragment(hideProgressBar = true)
-        })
+        }
+        mainFragmentRegistry.registerFragment(SectionRow::class.java, emptyPage)
+        mainFragmentRegistry.registerFragment(DividerRow::class.java, emptyPage)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -77,13 +79,9 @@ class HomeFragment : BrowseSupportFragment() {
             if (row.headerItem.name == getString(R.string.edit)) {
                 immichRowPresenter.editMode = !immichRowPresenter.editMode
                 if(immichRowPresenter.editMode){
-                    mRowsAdapter.clear()
-                    mRowsAdapter.add(profileRow)
-                    mRowsAdapter.addAll(1, rows.filter { it.headerItem.name != getString(R.string.settings) })
+                    showMenu(rows.filter { it.headerItem.name != getString(R.string.settings) })
                 } else {
-                    mRowsAdapter.clear();
-                    mRowsAdapter.add(profileRow)
-                    mRowsAdapter.addAll(1, rows.filter { !PreferenceManager.itemInStringSet(it.headerItem.name, HIDDEN_HOME_ITEMS) })
+                    showMenu(rows.filter { !PreferenceManager.itemInStringSet(it.headerItem.name, HIDDEN_HOME_ITEMS) })
                 }
                 adapter.notifyItemRangeChanged(0, mRowsAdapter.size());
             } else if(immichRowPresenter.editMode){
@@ -127,9 +125,17 @@ class HomeFragment : BrowseSupportFragment() {
         mRowsAdapter = ArrayObjectAdapter(ListRowPresenter())
         adapter = mRowsAdapter
         rows = createRows()
-        // Active account on top of the menu (non-focusable), the first page right below it
+        showMenu(rows.filter { !PreferenceManager.itemInStringSet(it.headerItem.name, HIDDEN_HOME_ITEMS) })
+    }
+
+    // Active account on top (non-focusable), then the pages, with a divider before Edit/Settings
+    private fun showMenu(pages: List<PageRow>) {
+        mRowsAdapter.clear()
         mRowsAdapter.add(profileRow)
-        mRowsAdapter.addAll(1, rows.filter { !PreferenceManager.itemInStringSet(it.headerItem.name, HIDDEN_HOME_ITEMS) })
+        pages.forEach { page ->
+            if (page.headerItem.name == getString(R.string.edit)) mRowsAdapter.add(DividerRow())
+            mRowsAdapter.add(page)
+        }
     }
 
     private fun createRows(): List<PageRow> {

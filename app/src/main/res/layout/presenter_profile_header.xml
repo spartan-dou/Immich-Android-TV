@@ -5,24 +5,24 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:paddingStart="18dp"
+    android:paddingStart="14dp"
     android:paddingEnd="12dp"
     android:paddingTop="8dp"
-    android:paddingBottom="20dp"
+    android:paddingBottom="14dp"
     android:focusable="false">
     <TextView
         android:id="@+id/profile_initial"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
         android:background="@drawable/avatar_circle"
         android:gravity="center"
         android:textColor="@android:color/white"
-        android:textSize="18sp"
+        android:textSize="15sp"
         android:textStyle="bold" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="14dp"
+        android:layout_marginStart="12dp"
         android:orientation="vertical">
         <TextView
             android:id="@+id/profile_name"
@@ -31,7 +31,7 @@
             android:singleLine="true"
             android:ellipsize="end"
             android:textColor="@color/screen_white"
-            android:textSize="17sp"
+            android:textSize="15sp"
             android:textStyle="bold" />
         <TextView
             android:id="@+id/profile_host"
@@ -40,6 +40,6 @@
             android:singleLine="true"
             android:ellipsize="end"
             android:textColor="@color/nav_item_text"
-            android:textSize="13sp" />
+            android:textSize="12sp" />
     </LinearLayout>
 </LinearLayout>
