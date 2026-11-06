@@ -183,7 +183,7 @@ object PreferenceManager {
         val items = getMetaData(AlignOption.RIGHT, metaDataScreen) + getMetaData(AlignOption.LEFT, metaDataScreen)
         // SHOW_DATES / SHOW_LOCATION are master switches over every per-screen setting
         val hidden = buildSet {
-            if (!get(SHOW_DATES)) addAll(listOf(MetaDataType.DATE, MetaDataType.TIME))
+            if (!get(SHOW_DATES)) addAll(listOf(MetaDataType.DATE, MetaDataType.TIME, MetaDataType.CURRENT_DATE))
             if (!get(SHOW_LOCATION)) addAll(listOf(MetaDataType.CITY, MetaDataType.COUNTRY))
         }
         return items.filterNot { it.type in hidden }
