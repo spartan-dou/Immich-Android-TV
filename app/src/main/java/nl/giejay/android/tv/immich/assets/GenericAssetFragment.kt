@@ -117,6 +117,8 @@ abstract class GenericAssetFragment : VerticalCardGridFragment<Asset>() {
         // no use case yet
     }
 
+    protected open val loadAllBeforeSlider: Boolean = false
+
     open fun showMediaCount(): Boolean {
         return false
     }
@@ -139,6 +141,15 @@ abstract class GenericAssetFragment : VerticalCardGridFragment<Asset>() {
     override fun onItemClicked(card: Card) {
         progressBar?.visibility = View.VISIBLE
         lifecycleScope.launch(Dispatchers.Default) {
+            if (loadAllBeforeSlider) {
+                // Bounded sources (an album): fetch every remaining page so the viewer is not
+                // limited to the few pages the grid happened to have loaded
+                while (!allPagesLoaded) {
+                    val more = loadMoreAssets()
+                    if (more.isEmpty()) break
+                    setDataOnMain(more)
+                }
+            }
             val toSliderItems = assets.toSliderItems(
                 keepOrder = true,
                 mergePortrait = PreferenceManager.get(SLIDER_MERGE_PORTRAIT_PHOTOS)

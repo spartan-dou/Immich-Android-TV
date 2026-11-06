@@ -20,6 +20,8 @@ class AlbumDetailsFragment : GenericAssetFragment() {
     lateinit var albumId: String
     lateinit var albumName: String
 
+    override val loadAllBeforeSlider: Boolean = true
+
     override fun getFilterKey(): EnumByTitlePref<ContentType> {
         albumId = AlbumDetailsFragmentArgs.fromBundle(requireArguments()).albumId
         albumName = AlbumDetailsFragmentArgs.fromBundle(requireArguments()).albumName
