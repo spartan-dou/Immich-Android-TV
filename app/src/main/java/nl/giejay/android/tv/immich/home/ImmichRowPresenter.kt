@@ -60,6 +60,7 @@ class ImmichRowPresenter : Presenter() {
         private val HEADER_ICONS = listOf(
             R.drawable.ic_nav_albums,
             R.drawable.ic_nav_timeline,
+            R.drawable.ic_nav_partners,
             R.drawable.ic_nav_photos,
             R.drawable.ic_nav_random,
             R.drawable.ic_nav_people,
